@@ -1,7 +1,7 @@
 package lk.ijse.greenshadow.DTO.IMPL;
 
-import com.example.demo.DTO.MonitoringLogStatus;
 import jakarta.persistence.Id;
+import lk.ijse.greenshadow.DTO.MonitoringLogStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
