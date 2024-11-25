@@ -1,8 +1,9 @@
 package lk.ijse.greenshadow.DTO.IMPL;
 
-import com.example.demo.DTO.CropStatus;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Id;
+import lk.ijse.greenshadow.DTO.CropStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
