@@ -1,7 +1,8 @@
 package lk.ijse.greenshadow.DTO.IMPL;
 
-import com.example.demo.DTO.VehicleStatus;
+
 import jakarta.persistence.Id;
+import lk.ijse.greenshadow.DTO.VehicleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
