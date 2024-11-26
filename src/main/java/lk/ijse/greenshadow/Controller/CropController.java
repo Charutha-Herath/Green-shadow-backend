@@ -61,6 +61,40 @@ public class CropController {
         }
     }
 
+    @PutMapping(value = "/{cropCode}")
+    public ResponseEntity<Void> updateCrop(@PathVariable("cropCode") String cropId,
+                                           @RequestPart( "cropName") String cropName,
+                                           @RequestPart("scientificName") String scientificName,
+                                           @RequestPart("category") String category,
+                                           @RequestPart("season") String season,
+                                           @RequestPart("cropImage") MultipartFile cropIMg
+                                           //@RequestPart("field") String field
+    ) {
+        try {
+            String cropImage = PicEncorder.generatePicture(cropIMg);
+            /* List<String> field_code = new ArrayList<>();
+            if (field != null) {
+                field_code = SplitString.spiltLists(field);
+            }*/
+            CropDTO cropDTO = new CropDTO();
+            cropDTO.setCropCode(cropId);
+            cropDTO.setCropName(cropName);
+            cropDTO.setScientificName(scientificName);
+            cropDTO.setCategory(category);
+            cropDTO.setSeason(season);
+            cropDTO.setCropImage(cropImage);
+            //cropDTO.setFieldList(field_code);
+
+            cropService.updateCrop(cropId, cropDTO);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (DataPersistException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 }

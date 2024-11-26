@@ -58,6 +58,17 @@ public class CropServiceIMPL implements CropService {
     }
 
     @Override
+    public void updateCrop(String cropCode, CropDTO cropDTO) {
+        Optional<CropEntity> cropEntity = cropDao.findById(cropCode);
+        if (cropEntity.isPresent()){
+            cropEntity.get().setCropName(cropDTO.getCropName());
+            cropEntity.get().setScientificName(cropDTO.getScientificName());
+            cropEntity.get().setSeason(cropDTO.getSeason());
+            cropEntity.get().setCategory(cropDTO.getCategory());
+            cropEntity.get().setCropImage(cropDTO.getCropImage());
+        }
+    }
+    @Override
     public List<CropDTO> getAllCrops() {
         return null;
     }
@@ -72,10 +83,7 @@ public class CropServiceIMPL implements CropService {
 
     }
 
-    @Override
-    public void updateCrop(String cropCode, CropDTO cropDTO) {
 
-    }
 
 
 }
