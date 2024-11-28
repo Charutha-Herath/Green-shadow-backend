@@ -25,12 +25,14 @@ public class Mapping {
     public CropDTO asCropDtolist(CropEntity crop){
         CropDTO cropDTO =new CropDTO();
         cropDTO.setCropCode(crop.getCropCode());
-        cropDTO.setCropName(cropDTO.getCropName());
+        cropDTO.setCropName(crop.getCropName());
         cropDTO.setScientificName(crop.getScientificName());
+        cropDTO.setCategory(crop.getCategory());
         cropDTO.setSeason(crop.getSeason());
         cropDTO.setCropImage(crop.getCropImage());
         cropDTO.setFieldList(crop.getFieldList().stream().map(FieldEntity::getFieldCode).toList());
         cropDTO.setLogList(crop.getLogList().stream().map(LogEntity::getLogCode).toList());
+        System.out.println("CropDTO : "+cropDTO);
         return cropDTO;
     }
 

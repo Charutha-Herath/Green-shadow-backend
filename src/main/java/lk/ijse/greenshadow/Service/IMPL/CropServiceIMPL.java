@@ -6,7 +6,9 @@ import lk.ijse.greenshadow.DAO.FieldDao;
 import lk.ijse.greenshadow.DTO.IMPL.CropDTO;
 import lk.ijse.greenshadow.Entity.IMPL.CropEntity;
 import lk.ijse.greenshadow.Entity.IMPL.FieldEntity;
+import lk.ijse.greenshadow.Entity.IMPL.LogEntity;
 import lk.ijse.greenshadow.Exception.DataPersistException;
+import lk.ijse.greenshadow.Exception.NotFoundException;
 import lk.ijse.greenshadow.Service.CropService;
 import lk.ijse.greenshadow.Util.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +74,8 @@ public class CropServiceIMPL implements CropService {
     public List<CropDTO> getAllCrops() {
         List<CropDTO>cropDTOS =new ArrayList<>();
         for (CropEntity crop: cropDao.findAll()){
+            System.out.println("Crop : "+crop);
+
             List<String>fieldCodes =new ArrayList<>();
 
             for (FieldEntity fieldEntity:crop.getFieldList()){
@@ -94,7 +98,24 @@ public class CropServiceIMPL implements CropService {
 
     @Override
     public void deleteCrop(String cropCode) {
+        if (cropDao.existsById(cropCode)){
+            CropEntity crop =cropDao.getReferenceById(cropCode);
+            List<FieldEntity>fieldEntities=crop.getFieldList();
+            for (FieldEntity field:fieldEntities){
+                List<CropEntity>cropEntities =field.getCropList();
+                cropEntities.remove(crop);
+            }
+            List<LogEntity>logEntities=crop.getLogList();
+            for (LogEntity log:logEntities){
+                List<CropEntity> cropEntities=log.getCropList();
+                cropEntities.remove(log);
+            }
 
+            crop.getFieldList().clear();
+            cropDao.delete(crop);
+        }else {
+            throw new NotFoundException("You entered crop ID not found");
+        }
     }
 
 
