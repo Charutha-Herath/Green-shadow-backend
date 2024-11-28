@@ -2,6 +2,7 @@ package lk.ijse.greenshadow.Util;
 
 
 import lk.ijse.greenshadow.DTO.IMPL.CropDTO;
+import lk.ijse.greenshadow.DTO.IMPL.FieldDTO;
 import lk.ijse.greenshadow.Entity.IMPL.CropEntity;
 import lk.ijse.greenshadow.Entity.IMPL.FieldEntity;
 import lk.ijse.greenshadow.Entity.IMPL.LogEntity;
@@ -34,6 +35,12 @@ public class Mapping {
         cropDTO.setLogList(crop.getLogList().stream().map(LogEntity::getLogCode).toList());
         System.out.println("CropDTO : "+cropDTO);
         return cropDTO;
+    }
+
+
+    public FieldEntity toFieldEntity(FieldDTO fieldDTO){
+
+        return modelMapper.map(fieldDTO, FieldEntity.class);
     }
 
 }
