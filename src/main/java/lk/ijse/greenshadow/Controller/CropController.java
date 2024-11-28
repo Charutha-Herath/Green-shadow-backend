@@ -97,4 +97,9 @@ public class CropController {
     }
 
 
+    @GetMapping
+    public List<CropDTO>getAllCrops(){
+        return cropService.getAllCrops();
+    }
+
 }

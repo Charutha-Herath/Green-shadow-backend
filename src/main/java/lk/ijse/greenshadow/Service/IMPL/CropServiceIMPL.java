@@ -70,7 +70,21 @@ public class CropServiceIMPL implements CropService {
     }
     @Override
     public List<CropDTO> getAllCrops() {
-        return null;
+        List<CropDTO>cropDTOS =new ArrayList<>();
+        for (CropEntity crop: cropDao.findAll()){
+            List<String>fieldCodes =new ArrayList<>();
+
+            for (FieldEntity fieldEntity:crop.getFieldList()){
+                fieldCodes.add(fieldEntity.getFieldCode());
+            }
+
+            CropDTO cropDTO =mapping.asCropDtolist(crop);
+
+            cropDTO.setFieldList(fieldCodes);
+            cropDTOS.add(cropDTO);
+
+        }
+        return cropDTOS;
     }
 
     @Override
