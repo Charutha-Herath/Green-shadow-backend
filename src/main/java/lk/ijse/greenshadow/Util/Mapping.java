@@ -3,6 +3,8 @@ package lk.ijse.greenshadow.Util;
 
 import lk.ijse.greenshadow.DTO.IMPL.CropDTO;
 import lk.ijse.greenshadow.DTO.IMPL.FieldDTO;
+import lk.ijse.greenshadow.DTO.IMPL.MonitoringLogDTO;
+import lk.ijse.greenshadow.DTO.MonitoringLogStatus;
 import lk.ijse.greenshadow.Entity.IMPL.CropEntity;
 import lk.ijse.greenshadow.Entity.IMPL.FieldEntity;
 import lk.ijse.greenshadow.Entity.IMPL.LogEntity;
@@ -43,4 +45,11 @@ public class Mapping {
         return modelMapper.map(fieldDTO, FieldEntity.class);
     }
 
+    public LogEntity toMonitoringLogEntity(MonitoringLogDTO monitoringLogDTO){
+        return modelMapper.map(monitoringLogDTO, LogEntity.class);
+    }
+
+    public MonitoringLogDTO toMonitoringLogDto(LogEntity monitoringLog){
+        return modelMapper.map(monitoringLog, MonitoringLogDTO.class);
+    }
 }
