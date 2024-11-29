@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/vehicles")
 @CrossOrigin
+@RequestMapping("api/v2/vehicles")
 public class VehicleController {
     @Autowired
     private VehicleService vehicleService;

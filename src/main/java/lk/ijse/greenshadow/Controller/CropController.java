@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/crops")
+@CrossOrigin
+@RequestMapping("api/v2/crops")
 public class CropController {
     @Autowired
     private CropService cropService;
