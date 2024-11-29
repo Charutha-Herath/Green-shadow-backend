@@ -59,7 +59,7 @@ public class LogsController {
                 logDto.setCropList(crop_codes);
                 logDto.setStaffList(straff_codes);
 
-            System.out.println(logDto);
+            System.out.println("log dto : "+logDto);
 
             monitoringLogService.saveLog(logDto);
             return new ResponseEntity<>(HttpStatus.CREATED);
