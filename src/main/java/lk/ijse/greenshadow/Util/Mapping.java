@@ -106,4 +106,22 @@ public class Mapping {
     public List<VehicleDTO>asVehicleDto(List<VehicleEntity>vehicleEntities){
         return modelMapper.map(vehicleEntities,new TypeToken<List<VehicleDTO>>(){}.getType());
     }
+
+    public EquipmentEntity toEquipmentEntity(EquipmentDTO equipmentDTO){
+        return modelMapper.map(equipmentDTO, EquipmentEntity.class);
+    }
+    public EquipmentDTO toEquipmentDTO(EquipmentEntity equipmentEntity){
+        return modelMapper.map(equipmentEntity, EquipmentDTO.class);
+    }
+    public EquipmentDTO asEquipmentDtoList(EquipmentEntity equipmentEntity){
+        EquipmentDTO equipmentDTO=new EquipmentDTO();
+        equipmentDTO.setEquipmentCode(equipmentEntity.getEquipmentCode());
+        equipmentDTO.setName(equipmentEntity.getName());
+        equipmentDTO.setType(equipmentEntity.getType());
+        equipmentDTO.setAvailableCount(equipmentEntity.getAvailableCount());
+        equipmentDTO.setFieldList(equipmentEntity.getFieldList().stream().map(FieldEntity::getFieldCode).toList());
+        return equipmentDTO;
+    }
+
+
 }
