@@ -70,5 +70,50 @@ public class FieldController {
         }
     }
 
+    @PutMapping(value = "/{fieldCode}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateField(@PathVariable("fieldCode")String fieldCode,
+                                            @RequestPart("fieldName") String fieldName,
+                                            @RequestPart("fieldLocation") String fieldLocation,
+                                            @RequestPart("fieldSize") String fieldSize,
+                                            @RequestPart("fieldImg1") MultipartFile fieldImg1,
+                                            @RequestPart("fieldImg2") MultipartFile fieldImg2,
+                                            @RequestPart("cropId")String cropList,
+                                            @RequestPart("staffId")String staffList){
+        try {
+
+            String fieldImage1 = PicEncorder.generatePicture(fieldImg1);
+            String fieldImage2 = PicEncorder.generatePicture(fieldImg2);
+
+            List<String> crop_codes = new ArrayList<>();
+            List<String> staff_codes = new ArrayList<>();
+            if (cropList != null) {
+                crop_codes = SplitString.spiltLists(cropList);
+            }
+            if (staffList != null) {
+                staff_codes = SplitString.spiltLists(staffList);
+            }
+            FieldDTO fieldDTO = new FieldDTO();
+            fieldDTO.setFieldCode(fieldCode);
+            fieldDTO.setName(fieldName);
+            fieldDTO.setLocation(fieldLocation);
+            fieldDTO.setExtentSize(Double.parseDouble(fieldSize));
+            fieldDTO.setFieldImage1(fieldImage1);
+            fieldDTO.setFieldImage2(fieldImage2);
+            fieldDTO.setCropsList(crop_codes);
+            fieldDTO.setStaffList(staff_codes);
+
+            fieldService.updateField(fieldCode,fieldDTO);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }catch (DataPersistException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
 }
 
