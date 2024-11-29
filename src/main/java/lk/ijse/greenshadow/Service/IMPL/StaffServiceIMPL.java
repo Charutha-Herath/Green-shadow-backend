@@ -104,34 +104,7 @@ public class StaffServiceIMPL implements StaffService {
         return mapping.toStaffDto(searchStaff);
     }
 
-    @Override
-    public void deleteStaff(String id) {
-        if (staffDao.existsById(id)){
-            StaffEntity staffEntity =staffDao.getReferenceById(id);
-            List<FieldEntity>fieldEntities=staffEntity.getFieldList();
-            List<VehicleEntity>vehicleEntities=staffEntity.getVehicleList();
-            List<LogEntity>logEntities=staffEntity.getLogList();
 
-            for (FieldEntity field:fieldEntities){
-                List<StaffEntity>staffEntities=field.getStaffList();
-                staffEntities.remove(staffEntity);
-            }
-            for (VehicleEntity vehicle:vehicleEntities){
-                vehicle.setStaff(null);
-            }
-            for (LogEntity logEntity:logEntities){
-                List<StaffEntity>staffEntities=logEntity.getStaffList();
-                staffEntities.remove(staffEntity);
-            }
-            staffEntity.getFieldList().clear();
-            staffEntity.getVehicleList().clear();
-            staffEntity.getLogList().clear();
-
-                staffDao.delete(staffEntity);
-        }else {
-            throw new NotFoundException("You Entered Member ID not found");
-        }
-    }
 
     @Override
     public void UpdateStaff(String id, StaffDTO staffDTO) {
@@ -168,5 +141,34 @@ public class StaffServiceIMPL implements StaffService {
 
             }
 
+    }
+
+    @Override
+    public void deleteStaff(String id) {
+        if (staffDao.existsById(id)){
+            StaffEntity staffEntity =staffDao.getReferenceById(id);
+            List<FieldEntity>fieldEntities=staffEntity.getFieldList();
+            List<VehicleEntity>vehicleEntities=staffEntity.getVehicleList();
+            List<LogEntity>logEntities=staffEntity.getLogList();
+
+            for (FieldEntity field:fieldEntities){
+                List<StaffEntity>staffEntities=field.getStaffList();
+                staffEntities.remove(staffEntity);
+            }
+            for (VehicleEntity vehicle:vehicleEntities){
+                vehicle.setStaff(null);
+            }
+            for (LogEntity logEntity:logEntities){
+                List<StaffEntity>staffEntities=logEntity.getStaffList();
+                staffEntities.remove(staffEntity);
+            }
+            staffEntity.getFieldList().clear();
+            staffEntity.getVehicleList().clear();
+            staffEntity.getLogList().clear();
+
+            staffDao.delete(staffEntity);
+        }else {
+            throw new NotFoundException("Wrong Id");
+        }
     }
 }
