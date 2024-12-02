@@ -6,6 +6,7 @@ import lk.ijse.greenshadow.DTO.FieldStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.geo.Point;
 
 import java.util.List;
 @AllArgsConstructor
@@ -15,7 +16,7 @@ public class FieldDTO implements FieldStatus {
     @Id
     private String fieldCode;
     private String name;
-    private String location;
+    private Point location;
     private Double extentSize;
     private String fieldImage1;
     private String fieldImage2;
