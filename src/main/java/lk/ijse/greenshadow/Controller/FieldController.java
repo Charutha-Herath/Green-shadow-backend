@@ -7,6 +7,7 @@ import lk.ijse.greenshadow.Util.IdGenerater;
 import lk.ijse.greenshadow.Util.PicEncorder;
 import lk.ijse.greenshadow.Util.SplitString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Point;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class FieldController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> saveField(@RequestPart("fieldName") String fieldName,
-                                          @RequestPart("fieldLocation") String fieldLocation,
+                                          @RequestPart("fieldLocation") Point fieldLocation,
                                           @RequestPart("fieldSize") String fieldSize,
                                           @RequestPart("fieldImg1") MultipartFile fieldImg1,
                                           @RequestPart("fieldImg2") MultipartFile fieldImg2,
@@ -73,7 +74,7 @@ public class FieldController {
     @PutMapping(value = "/{fieldCode}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updateField(@PathVariable("fieldCode")String fieldCode,
                                             @RequestPart("fieldName") String fieldName,
-                                            @RequestPart("fieldLocation") String fieldLocation,
+                                            @RequestPart("fieldLocation") Point fieldLocation,
                                             @RequestPart("fieldSize") String fieldSize,
                                             @RequestPart("fieldImg1") MultipartFile fieldImg1,
                                             @RequestPart("fieldImg2") MultipartFile fieldImg2,
