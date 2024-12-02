@@ -44,8 +44,12 @@ public class StaffServiceIMPL implements StaffService {
             number=Integer.parseInt(parts[1]);
         }
         staffDTO.setMemberCode("MEMBER-"+ ++number);
-        List<FieldEntity>fieldEntities =new ArrayList<>();
+        System.out.println("New staff id : "+staffDTO.getMemberCode());
+        /*List<FieldEntity>fieldEntities =new ArrayList<>();
             for (String fieldCode : staffDTO.getFieldList()){
+                if (fieldCode == null){
+                    System.out.println("fieldCode null : "+fieldCode);
+                }
                 fieldEntities.add(fieldDao.getReferenceById(fieldCode));
             }
         List<VehicleEntity>vehicleEntities=new ArrayList<>();
@@ -55,15 +59,15 @@ public class StaffServiceIMPL implements StaffService {
         List<LogEntity>logEntities=new ArrayList<>();
             for (String lid :staffDTO.getLogList()){
                 logEntities.add(monitoringLogDao.getReferenceById(lid));
-            }
+            }*/
         StaffEntity staffEntity=mapping.toStaffEntity(staffDTO);
-        staffEntity.setFieldList(fieldEntities);
-        staffEntity.setVehicleList(vehicleEntities);
-        staffEntity.setLogList(logEntities);
-
-        for (FieldEntity field:fieldEntities){
-            field.getStaffList().add(staffEntity);
-        }
+//        staffEntity.setFieldList(fieldEntities);
+//        staffEntity.setVehicleList(vehicleEntities);
+//        staffEntity.setLogList(logEntities);
+//
+//        for (FieldEntity field:fieldEntities){
+//            field.getStaffList().add(staffEntity);
+//        }
             StaffEntity staffEntity1 =staffDao.save(staffEntity);
             if (staffEntity1==null){
                 throw new DataPersistException("Something went wrong");
@@ -123,7 +127,7 @@ public class StaffServiceIMPL implements StaffService {
                 staffEntity.get().setAddressLine5(staffDTO.getAddressLine5());
                 staffEntity.get().setContactNo(staffDTO.getContactNo());
                 staffEntity.get().setRole(staffDTO.getRole());
-                List<VehicleEntity>vehicleEntities=new ArrayList<>();
+               /* List<VehicleEntity>vehicleEntities=new ArrayList<>();
                 List<FieldEntity>fieldEntities=new ArrayList<>();
                 List<LogEntity>logEntities=new ArrayList<>();
                     for (String vehiId :staffDTO.getVehicleList()){
@@ -137,7 +141,7 @@ public class StaffServiceIMPL implements StaffService {
                     }
                     staffEntity.get().setVehicleList(vehicleEntities);
                     staffEntity.get().setFieldList(fieldEntities);
-                    staffEntity.get().setLogList(logEntities);
+                    staffEntity.get().setLogList(logEntities);*/
 
             }
 
