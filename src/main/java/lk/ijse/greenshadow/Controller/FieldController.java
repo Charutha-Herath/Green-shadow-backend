@@ -1,146 +1,57 @@
-package lk.ijse.greenshadow.Controller;
+package lk.ijse.greenshadow.controller;
 
-import lk.ijse.greenshadow.DTO.IMPL.FieldDTO;
-import lk.ijse.greenshadow.Exception.DataPersistException;
-import lk.ijse.greenshadow.Service.FieldService;
-import lk.ijse.greenshadow.Util.IdGenerater;
-import lk.ijse.greenshadow.Util.PicEncorder;
-import lk.ijse.greenshadow.Util.SplitString;
+import jakarta.validation.Valid;
+import lk.ijse.greenshadow.dto.MessageResponse;
+import lk.ijse.greenshadow.entity.Field;
+import lk.ijse.greenshadow.service.FieldService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.geo.Point;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@RestController
 @CrossOrigin
-@RequestMapping("api/v2/fields")
+@RestController
+@RequestMapping("/api/fields")
 public class FieldController {
+
     @Autowired
     private FieldService fieldService;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> saveField(@RequestPart("fieldName") String fieldName,
-                                          @RequestPart("fieldLocation") Point fieldLocation,
-                                          @RequestPart("fieldSize") String fieldSize,
-                                          @RequestPart("fieldImg1") MultipartFile fieldImg1,
-                                          @RequestPart("fieldImg2") MultipartFile fieldImg2,
-                                          @RequestPart("cropId")String cropList,
-                                          @RequestPart("staffId")String staffList ){
-        try {
-
-            String img1 = PicEncorder.generatePicture(fieldImg1);
-            String img2 = PicEncorder.generatePicture(fieldImg2);
-            List<String>cropEntities=new ArrayList<>();
-            List<String>staffEntities=new ArrayList<>();
-
-
-            if (cropList!= null) {
-                cropEntities = SplitString.spiltLists(cropList);
-            }
-            if (staffList!=null){
-                staffEntities=SplitString.spiltLists(staffList);
-            }
-
-
-            FieldDTO fieldDTO = new FieldDTO();
-                fieldDTO.setFieldCode(IdGenerater.generateId("FIELD-"));
-                fieldDTO.setName(fieldName);
-                fieldDTO.setLocation(fieldLocation);
-                fieldDTO.setExtentSize(Double.parseDouble(fieldSize));
-                fieldDTO.setFieldImage1(img1);
-                fieldDTO.setFieldImage2(img2);
-                fieldDTO.setCropsList(cropEntities);
-                fieldDTO.setStaffList(staffEntities);
-
-//            System.out.println(fieldDTO);
-
-            fieldService.saveField(fieldDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (DataPersistException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PutMapping(value = "/{fieldCode}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateField(@PathVariable("fieldCode")String fieldCode,
-                                            @RequestPart("fieldName") String fieldName,
-                                            @RequestPart("fieldLocation") Point fieldLocation,
-                                            @RequestPart("fieldSize") String fieldSize,
-                                            @RequestPart("fieldImg1") MultipartFile fieldImg1,
-                                            @RequestPart("fieldImg2") MultipartFile fieldImg2,
-                                            @RequestPart("cropId")String cropList,
-                                            @RequestPart("staffId")String staffList){
-        try {
-
-            String fieldImage1 = PicEncorder.generatePicture(fieldImg1);
-            String fieldImage2 = PicEncorder.generatePicture(fieldImg2);
-
-            List<String> crop_codes = new ArrayList<>();
-            List<String> staff_codes = new ArrayList<>();
-            if (cropList != null) {
-                crop_codes = SplitString.spiltLists(cropList);
-            }
-            if (staffList != null) {
-                staff_codes = SplitString.spiltLists(staffList);
-            }
-            FieldDTO fieldDTO = new FieldDTO();
-            fieldDTO.setFieldCode(fieldCode);
-            fieldDTO.setName(fieldName);
-            fieldDTO.setLocation(fieldLocation);
-            fieldDTO.setExtentSize(Double.parseDouble(fieldSize));
-            fieldDTO.setFieldImage1(fieldImage1);
-            fieldDTO.setFieldImage2(fieldImage2);
-            fieldDTO.setCropsList(crop_codes);
-            fieldDTO.setStaffList(staff_codes);
-
-            fieldService.updateField(fieldCode,fieldDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        }catch (DataPersistException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @GetMapping
-    public List<FieldDTO>getall(){
-        try {
-            return   fieldService.getAllFields();
-        }catch (Exception e){
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMINISTRATIVE', 'SCIENTIST', 'OTHER')")
+    public ResponseEntity<List<Field>> getAllFields(@RequestParam(required = false) String sortBy) {
+        List<Field> fields = fieldService.getAllFields(sortBy);
+        return ResponseEntity.ok(fields);
     }
 
-    @DeleteMapping(value = "/{fieldCode}",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void>deleteField(@PathVariable("fieldCode")String fieldCode){
-        try{
-            fieldService.deleteFields(fieldCode);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }catch (DataPersistException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMINISTRATIVE', 'SCIENTIST', 'OTHER')")
+    public ResponseEntity<Field> getFieldById(@PathVariable Long id) {
+        Field field = fieldService.getFieldById(id)
+                .orElseThrow(() -> new RuntimeException("Field not found"));
+        return ResponseEntity.ok(field);
     }
 
+    @PostMapping
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATIVE')")
+    public ResponseEntity<Field> createField(@Valid @RequestBody Field field) {
+        Field createdField = fieldService.createField(field);
+        return ResponseEntity.ok(createdField);
+    }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATIVE')")
+    public ResponseEntity<Field> updateField(@PathVariable Long id, @Valid @RequestBody Field fieldDetails) {
+        Field updatedField = fieldService.updateField(id, fieldDetails);
+        return ResponseEntity.ok(updatedField);
+    }
 
-
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATIVE')")
+    public ResponseEntity<?> deleteField(@PathVariable Long id) {
+        fieldService.deleteField(id);
+        return ResponseEntity.ok(new MessageResponse("Field deleted successfully!"));
+    }
 }
-
