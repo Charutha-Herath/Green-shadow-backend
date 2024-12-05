@@ -1,64 +1,57 @@
-package lk.ijse.greenshadow.Controller;
+package lk.ijse.greenshadow.controller;
 
-
-import lk.ijse.greenshadow.DTO.IMPL.VehicleDTO;
-import lk.ijse.greenshadow.Exception.DataPersistException;
-import lk.ijse.greenshadow.Service.VehicleService;
+import jakarta.validation.Valid;
+import lk.ijse.greenshadow.dto.MessageResponse;
+import lk.ijse.greenshadow.entity.Vehicle;
+import lk.ijse.greenshadow.service.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
 @CrossOrigin
-@RequestMapping("api/v2/vehicles")
+@RestController
+@RequestMapping("/api/vehicles")
 public class VehicleController {
+
     @Autowired
     private VehicleService vehicleService;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> saveVehicle(@RequestBody VehicleDTO vehicleDTO) {
-        try {
-            vehicleService.saveVehicle(vehicleDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (
-                DataPersistException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @GetMapping
-    public List<VehicleDTO>getAll(){
-        return vehicleService.getAllVehicles();
-    }
-    @PutMapping(value = "/{vehicleCode}",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void>updateVehicle(@PathVariable("vehicleCode")String vehicleCode,@RequestBody VehicleDTO vehicleDTO){
-        try {
-            vehicleService.updateVehicle(vehicleCode,vehicleDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        }catch (DataPersistException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMINISTRATIVE', 'SCIENTIST', 'OTHER')")
+    public ResponseEntity<List<Vehicle>> getAllVehicles(@RequestParam(required = false) String sortBy) {
+        List<Vehicle> vehicles = vehicleService.getAllVehicles(sortBy);
+        return ResponseEntity.ok(vehicles);
     }
 
-    @DeleteMapping(value = "/{vehicleCode}",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void>deleteVehicle(@PathVariable("vehicleCode")String vehicle){
-        try {
-            vehicleService.deleteVehicle(vehicle);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }catch (DataPersistException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMINISTRATIVE', 'SCIENTIST', 'OTHER')")
+    public ResponseEntity<Vehicle> getVehicleById(@PathVariable Long id) {
+        Vehicle vehicle = vehicleService.getVehicleById(id)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        return ResponseEntity.ok(vehicle);
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATIVE')")
+    public ResponseEntity<Vehicle> createVehicle(@Valid @RequestBody Vehicle vehicle) {
+        Vehicle createdVehicle = vehicleService.createVehicle(vehicle);
+        return ResponseEntity.ok(createdVehicle);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATIVE')")
+    public ResponseEntity<Vehicle> updateVehicle(@PathVariable Long id, @Valid @RequestBody Vehicle vehicleDetails) {
+        Vehicle updatedVehicle = vehicleService.updateVehicle(id, vehicleDetails);
+        return ResponseEntity.ok(updatedVehicle);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATIVE')")
+    public ResponseEntity<?> deleteVehicle(@PathVariable Long id) {
+        vehicleService.deleteVehicle(id);
+        return ResponseEntity.ok(new MessageResponse("Vehicle deleted successfully!"));
     }
 }
