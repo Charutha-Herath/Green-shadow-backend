@@ -1,124 +1,57 @@
-package lk.ijse.greenshadow.Controller;
+package lk.ijse.greenshadow.controller;
 
-
-import lk.ijse.greenshadow.DTO.IMPL.CropDTO;
-import lk.ijse.greenshadow.Exception.DataPersistException;
-import lk.ijse.greenshadow.Service.CropService;
-import lk.ijse.greenshadow.Util.IdGenerater;
-import lk.ijse.greenshadow.Util.PicEncorder;
-import lk.ijse.greenshadow.Util.SplitString;
+import jakarta.validation.Valid;
+import lk.ijse.greenshadow.dto.MessageResponse;
+import lk.ijse.greenshadow.entity.Crop;
+import lk.ijse.greenshadow.service.CropService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@RestController
 @CrossOrigin
-@RequestMapping("api/v2/crops")
+@RestController
+@RequestMapping("/api/crops")
 public class CropController {
+
     @Autowired
     private CropService cropService;
 
-    @PreAuthorize("hasAnyRole('MANAGER','SCIENTIST')")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> saveCrop(@RequestPart( "commonName") String cropName,
-                                         @RequestPart("scientificName") String scientificName,
-                                         @RequestPart("category") String category,
-                                         @RequestPart("season") String season,
-                                         @RequestPart("cropImage") MultipartFile cropIMg,
-                                         @RequestPart("field") String field) {
-
-        try {
-            String cropIMG = PicEncorder.generatePicture(cropIMg);
-            List<String> filed_codes = new ArrayList<>();
-
-
-            if (field!= null) {
-                filed_codes = SplitString.spiltLists(field);
-            }
-
-
-            CropDTO cropDTO = new CropDTO();
-                cropDTO.setCropCode(IdGenerater.generateId("CROP-"));
-                cropDTO.setCropName(cropName);
-                cropDTO.setScientificName(scientificName);
-                cropDTO.setCategory(category);
-                cropDTO.setSeason(season);
-                cropDTO.setCropImage(cropIMG);
-                cropDTO.setFieldList(filed_codes);
-
-            cropService.saveCrop(cropDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (DataPersistException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @PreAuthorize("hasAnyRole('MANAGER','SCIENTIST')")
-    @PutMapping(value = "/{cropCode}")
-    public ResponseEntity<Void> updateCrop(@PathVariable("cropCode") String cropId,
-                                           @RequestPart( "cropName") String cropName,
-                                           @RequestPart("scientificName") String scientificName,
-                                           @RequestPart("category") String category,
-                                           @RequestPart("season") String season,
-                                           @RequestPart("cropImage") MultipartFile cropIMg
-                                           //@RequestPart("field") String field
-    ) {
-        try {
-            String cropImage = PicEncorder.generatePicture(cropIMg);
-            /* List<String> field_code = new ArrayList<>();
-            if (field != null) {
-                field_code = SplitString.spiltLists(field);
-            }*/
-            CropDTO cropDTO = new CropDTO();
-            cropDTO.setCropCode(cropId);
-            cropDTO.setCropName(cropName);
-            cropDTO.setScientificName(scientificName);
-            cropDTO.setCategory(category);
-            cropDTO.setSeason(season);
-            cropDTO.setCropImage(cropImage);
-            //cropDTO.setFieldList(field_code);
-
-            cropService.updateCrop(cropId, cropDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (DataPersistException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PreAuthorize("hasAnyRole('MANAGER','ADMINISTRATIVE','SCIENTIST')")
     @GetMapping
-    public List<CropDTO>getAllCrops(){
-        return cropService.getAllCrops();
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMINISTRATIVE', 'SCIENTIST', 'OTHER')")
+    public ResponseEntity<List<Crop>> getAllCrops(@RequestParam(required = false) String sortBy) {
+        List<Crop> crops = cropService.getAllCrops(sortBy);
+        return ResponseEntity.ok(crops);
     }
 
-
-    @PreAuthorize("hasAnyRole('MANAGER','SCIENTIST')")
-    @DeleteMapping(value = "/{cropCode}")
-    public ResponseEntity<Void> deleteCrop(@PathVariable("cropCode")String cropCode){
-        try{
-            cropService.deleteCrop(cropCode);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }catch (DataPersistException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMINISTRATIVE', 'SCIENTIST', 'OTHER')")
+    public ResponseEntity<Crop> getCropById(@PathVariable Long id) {
+        Crop crop = cropService.getCropById(id)
+                .orElseThrow(() -> new RuntimeException("Crop not found"));
+        return ResponseEntity.ok(crop);
     }
 
+    @PostMapping
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATIVE')")
+    public ResponseEntity<Crop> createCrop(@Valid @RequestBody Crop crop) {
+        Crop createdCrop = cropService.createCrop(crop);
+        return ResponseEntity.ok(createdCrop);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATIVE')")
+    public ResponseEntity<Crop> updateCrop(@PathVariable Long id, @Valid @RequestBody Crop cropDetails) {
+        Crop updatedCrop = cropService.updateCrop(id, cropDetails);
+        return ResponseEntity.ok(updatedCrop);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMINISTRATIVE')")
+    public ResponseEntity<?> deleteCrop(@PathVariable Long id) {
+        cropService.deleteCrop(id);
+        return ResponseEntity.ok(new MessageResponse("Crop deleted successfully!"));
+    }
 }
