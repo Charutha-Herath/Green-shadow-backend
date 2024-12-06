@@ -27,8 +27,12 @@ public class Field {
 
     private Point location; // Simplified for this example
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String fieldImage1;
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String fieldImage2;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)

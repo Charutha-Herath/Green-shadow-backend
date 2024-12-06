@@ -22,6 +22,8 @@ public class Crop {
 
     private String scientificName;
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String cropImage;
 
     private String category;
