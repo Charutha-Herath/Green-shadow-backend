@@ -18,13 +18,13 @@ public class AuthController {
     @Autowired
     AuthService authService;
 
-    @PostMapping("/signin")
+    @PostMapping("api/auth/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         String token = authService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword());
         return ResponseEntity.ok(new JwtResponse(token, "Bearer"));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("api/auth/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         User user = authService.registerUser(
                 signUpRequest.getUsername(),
