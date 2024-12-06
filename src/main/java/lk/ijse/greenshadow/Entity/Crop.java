@@ -23,8 +23,8 @@ public class Crop {
     private String scientificName;
 
     @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private String cropImage;
+    @Column(name = "cropImage", columnDefinition = "LONGBLOB") // Adjust columnDefinition based on your DB
+    private byte[] cropImage;
 
     private String category;
 
