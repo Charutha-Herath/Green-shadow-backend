@@ -1,7 +1,9 @@
 package lk.ijse.greenshadow.service;
 
 import lk.ijse.greenshadow.entity.Crop;
+import lk.ijse.greenshadow.entity.Field;
 import lk.ijse.greenshadow.repository.CropRepository;
+import lk.ijse.greenshadow.repository.FieldRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -11,8 +13,12 @@ import java.util.Optional;
 
 @Service
 public class CropService {
+
     @Autowired
     private CropRepository cropRepository;
+
+    @Autowired
+    private FieldRepository fieldRepository; // Add FieldRepository to handle Field entities
 
     public List<Crop> getAllCrops(String sortBy) {
         if (sortBy != null) {
@@ -42,9 +48,16 @@ public class CropService {
 
         return cropRepository.save(crop);
     }
+
     public void deleteCrop(Long id) {
         Crop crop = cropRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Crop not found"));
         cropRepository.delete(crop);
+    }
+
+    // New method to fetch a Field by its ID
+    public Field getFieldById(Long fieldId) {
+        return fieldRepository.findById(fieldId)
+                .orElseThrow(() -> new RuntimeException("Field not found"));
     }
 }
