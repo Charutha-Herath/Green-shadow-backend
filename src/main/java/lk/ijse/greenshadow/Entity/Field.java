@@ -22,18 +22,18 @@ public class Field {
     @NotBlank(message = "Name must not be blank")
     private String name;
 
-    // Spatial data can be represented using coordinates or geometrical data types
     private double landSize; // in acres or relevant unit
 
-    private Point location; // Simplified for this example
+    @Column
+    private String location;
 
     @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private String fieldImage1;
+    @Column(name = "field_image1", columnDefinition = "LONGBLOB")
+    private byte[] fieldImage1;
 
     @Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private String fieldImage2;
+    @Column(name = "field_image2", columnDefinition = "LONGBLOB")
+    private byte[] fieldImage2;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     private Set<Crop> crops;
