@@ -24,7 +24,7 @@ public class Equipment {
     @NotBlank
     private String name;
 
-    @NotBlank
+
     private EquipmentType equipmentType;
 
     private Status status;
