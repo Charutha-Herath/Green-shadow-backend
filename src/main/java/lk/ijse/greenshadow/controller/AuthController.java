@@ -13,18 +13,18 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
     @Autowired
     AuthService authService;
 
-    @PostMapping("api/auth/signin")
+    @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         String token = authService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword());
         return ResponseEntity.ok(new JwtResponse(token, "Bearer"));
     }
 
-    @PostMapping("api/auth/signup")
+    @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         User user = authService.registerUser(
                 signUpRequest.getUsername(),

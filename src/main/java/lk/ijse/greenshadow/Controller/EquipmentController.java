@@ -13,7 +13,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/equipment")
+@RequestMapping("/api/v1/equipment")
 public class EquipmentController {
 
     @Autowired

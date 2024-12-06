@@ -11,7 +11,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/logs")
+@RequestMapping("/api/v1/logs")
 public class LogController {
     @Autowired
     private LogService logService;
